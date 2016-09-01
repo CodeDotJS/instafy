@@ -1,0 +1,53 @@
+{
+  "name": "instafy",
+  "version": "1.0.0",
+  "description": "A command line Instagram media notifier!",
+  "main": "cli.js",
+  "bin": {
+    "instafy": "cli.js"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "scripts": {
+    "test": "xo && ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeDotJS/instafy.git"
+  },
+  "keywords": [
+    "instagram",
+    "notification",
+    "new",
+    "posts",
+    "photos",
+    "images",
+    "update",
+    "notify",
+    "cli-app",
+    "cli",
+    "notifier"
+  ],
+  "dependencies": {
+    "got": "^6.3.0",
+    "fs-extra": "0.30.0",
+    "log-update": "^1.0.2",
+    "ora": "^0.2.1",
+    "chalk": "^1.1.3",
+    "update-notifier": "^1.0.2"
+  },
+  "devDependencies": {
+    "ava": "0.16.0",
+    "xo": "0.16.0"
+  },
+  "xo": {
+    "esnext": true
+  },
+  "author": "Rishi Giri <rushforlinux@gmail.com> (http://rishigiri.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CodeDotJS/instafy/issues"
+  },
+  "homepage": "https://github.com/CodeDotJS/instafy#readme"
+}
