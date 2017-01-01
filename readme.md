@@ -3,7 +3,7 @@
 > :telescope: A command line Instagram media notifier!
 
 <p align="center">
-	<img width="500" src="media/instafy.gif">
+	<img width="500" src="https://raw.githubusercontent.com/CodeDotJS/instafy/master/media/ezgif.com-c89e83e4ef.gif">
 	<br>
 	<br>
 	<img src="https://img.shields.io/badge/code_style-XO-5ed9c7.svg">
@@ -32,17 +32,21 @@ $ sudo npm install --global instafy
 ## Usage
 
 ```
- Usage   : instafy [username]
+Keep your browser history clean!
 
- Example : instafy iama_rishi
+Usage   : instafy <username> | [command] <username>
 
- Help    : instafy -h or --help
+ Command :
+   -r,  --remove        remove a user from istafy list
+   -c,  --clean         clean instafy directory
+   -h,  --help          show help
 
- Version : instafy -v or --version
+ Example :
+   $ instafy 9gag
 ```
 
 
-__`NOTE :`__ 
+__`NOTE :`__
 
 - You've to run the script twice.
 
