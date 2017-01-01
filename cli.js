@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 'use strict';
-const fs = require('fs');
+
 const os = require('os');
+const fs = require('fs');
 const dns = require('dns');
 const fse = require('fs-extra');
 const got = require('got');
@@ -17,112 +18,124 @@ updateNotifier({pkg}).notify();
 const spinner = ora();
 
 const arg = process.argv[2];
-
-if (!arg || arg === '-h' || arg === '--help') {
-	console.log(
-		`
- ${chalk.cyan('Usage   :')} instafy ${chalk.blue('[username]')}
-
- ${chalk.cyan('Example :')} instafy ${chalk.green('iama_rishi')}
-
- ${chalk.cyan('Help    :')} ${chalk.dim('instafy -h')} or ${chalk.dim('--help')}
-
- ${chalk.cyan('Version :')} ${chalk.dim('instafy -v')} or ${chalk.dim('--version')}
- `
-	);
-	process.exit(1);
-}
-
-if (arg === '-v' || arg === '--version') {
-	console.log(`\n${chalk.yellow(' Verison :')} ${chalk.cyan(pkg.version)}\n`);
-	process.exit(1);
-}
+const nex = process.argv[3];
 
 const pre = chalk.cyan.bold('›');
 const pos = chalk.red.bold('›');
 
-const url = `https://instagram.com/${arg}`;
+const url = `https://www.instagram.com/${arg}/?__a=1`;
+const baseDir = `${os.homedir()}/.instafy/`;
+const dir = `${baseDir}${arg}.txt`;
+const rem = `${baseDir}${nex}.txt`;
 
-const mainPath = os.homedir();
-const reqPath = `/.instafy/${arg}.txt`;
+if (!arg || arg === '-h' || arg === '--help') {
+	console.log(`
+  Keep your browser history clean!
 
-const file = `${mainPath}${reqPath}`;
+  ${chalk.cyan('Usage')}   : instafy <username> | [command] <username>
 
-const match = arg => {
-	const rePattern = /{(.+?)}/g;
-	return arg.match(rePattern)[4].split(', "')[0].split(' ')[1].replace('}', '');
-};
+  ${chalk.cyan('Command')} :
+   -r,  --remove        remove a user from istafy list
+   -c,  --clean         clean instafy directory
+   -h,  --help          show help
 
-dns.lookup('instagram.com', err => {
-	if (err && err.code === 'ENOTFOUND') {
-		logUpdate(`\n${pos} ${chalk.dim('Please check your internet connection\n')}`);
+  ${chalk.cyan('Example')} :
+   $ instafy 9gag
+  `);
+	process.exit(1);
+}
+
+if (arg === '-c' || arg === '--clean') {
+	fse.emptyDir(baseDir, err => {
+		if (err) {
+			process.exit(1);
+		} else {
+			console.log(`\n${pre} Cleaned!\n`);
+			process.exit(1);
+		}
+	});
+}
+
+if (arg === '-r' || arg === '--remove') {
+	if (!nex) {
+		logUpdate(`\n${pos} Provide a username!\n`);
 		process.exit(1);
-	} else {
-		console.log();
-		spinner.text = `${chalk.dim('Checking for new posts!')}`;
-		spinner.start();
-
-		if (!fs.existsSync(file)) {
-			fse.ensureFile(file, err => {
-				if (err) {
-					process.exit(1);
-				} else {
-					spinner.text = `${chalk.dim(`Instafying ${arg}`)}`;
-					got(url).then(res => {
-						const part = res.body;
-						const matchPart = match(part);
-						const buffer = new Buffer(`${matchPart}`);
-						spinner.stop();
-						logUpdate(`${pre} run ${chalk.yellow('instafy')} again!\n`);
-						const stream = fs.createWriteStream(file);
-						stream.once('open', () => {
-							stream.write(buffer);
-							stream.end();
-						});
-					}).catch(err => {
-						if (err) {
-							spinner.stop();
-							logUpdate(`${pos} ${chalk.yellow(arg)} is not an Instagram user.\n`);
-							fs.unlinkSync(file);
-						}
-					});
-				}
-			});
-		}
-
-		if (fs.existsSync(file)) {
-			got(url).then(res => {
-				const store = res.body;
-				const arrPost = match(store);
-				const read = fs.readFileSync(file, 'utf-8');
-
-				const remotePosts = parseInt(arrPost, 10);
-				const localPosts = parseInt(read, 10);
-
-				let message = '';
-
-				if (remotePosts === localPosts) {
-					message = `${pre} ${chalk.yellow(`No new posts by ${arg}!`)}\n`;
-				} else if (remotePosts > localPosts) {
-					message = `${pre} ${chalk.green('Notification :')} ${chalk.yellow(`${arg} added ${remotePosts - localPosts} new post(s)`)}\n\n${pre} ${chalk.dim(`Check at     : ${url}`)}\n`;
-				} else {
-					message = `${pos} ${chalk.red('Notification :')} ${chalk.yellow(`${arg} removed ${localPosts - remotePosts} post(s)`)}\n`;
-				}
-
-				const buffer = new Buffer(`${arrPost}`);
-				const stream = fs.createWriteStream(file);
-				stream.once('open', () => {
-					stream.write(buffer);
-					stream.end();
-				});
-				spinner.stop();
-				logUpdate(message);
-			}).catch(err => {
-				if (err) {
-					spinner.stop();
-					logUpdate(`${pos} ${chalk.yellow(arg)} is not an Instagram user.\n`);
-				}
-			});
-		}
 	}
-});
+	if (nex && fs.existsSync(rem)) {
+		fs.unlinkSync(rem);
+	} else {
+		logUpdate(`\n${pos} Sorry! ${chalk.bold(nex)} has not been instafyed yet\n`);
+		process.exit(1);
+	}
+	logUpdate(`\n${pre} Removed ${nex} from the list!\n`);
+}
+
+if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !nex) {
+	logUpdate();
+	spinner.text = `${chalk.dim('Let the stalking begin!')}`;
+	spinner.start();
+	dns.lookup('instagram.com', err => {
+		if (err) {
+			spinner.stop();
+			logUpdate(`\n${pos} ${chalk.dim('Please check your internet connection!')}\n`);
+		} else {
+			logUpdate();
+			spinner.text = chalk.dim('Checking for new posts!');
+			spinner.start();
+
+			if (!fs.existsSync(dir)) {
+				fse.ensureFile(dir, err => {
+					if (err) {
+						process.exit(1);
+					} else {
+						logUpdate();
+						spinner.text = `${chalk.dim(`Instafying ${arg}`)}`;
+						got(url, {json: true}).then(res => {
+							const count = res.body.user.media.count;
+							spinner.stop();
+							logUpdate(`\n${pre} ${chalk.dim('Run')} ${chalk.green(`instafy ${arg}`)} ${chalk.dim('next time to get post notifications!')}\n`);
+							const buffer = new Buffer(`${count}`);
+							const stream = fs.createWriteStream(dir);
+							stream.once('open', () => {
+								stream.write(buffer);
+								stream.end();
+							});
+						}).catch(err => {
+							if (err) {
+								spinner.stop();
+								logUpdate(`\n${pos} ${chalk.yellow(arg)} ${chalk.dim('is not an Instagram user.')}\n`);
+								fs.unlinkSync(dir);
+							}
+						});
+					}
+				});
+			}
+			if (fs.existsSync(dir)) {
+				got(url, {json: true}).then(res => {
+					const remotePosts = res.body.user.media.count;
+					const localPosts = fs.readFileSync(dir, 'utf-8');
+					const name = res.body.user.full_name;
+					const changeRemote = parseInt(remotePosts, 10);
+					const changeLocal = parseInt(localPosts, 10);
+
+					spinner.stop();
+
+					if (changeRemote === changeLocal) {
+						logUpdate(`\n${pre} ${chalk.cyan('Notification :')} ${chalk.green('No new posts')} ${name}\n`);
+					} else if (changeRemote > changeLocal) {
+						logUpdate(`\n${pre} ${chalk.blue('Notification :')} ${changeRemote - changeLocal} new post(s) by ${name}\n\n${pre} ${chalk.blue('Check at     :')} ${url.replace('/?__a=1', '')}\n`);
+					} else {
+						logUpdate(`\n${pos} ${chalk.red('Notification :')} ${name} deleted ${changeLocal - changeRemote} post(s)\n`);
+					}
+
+					const buffer = new Buffer(`${remotePosts}`);
+					const stream = fs.createWriteStream(dir);
+					stream.once('open', () => {
+						stream.write(buffer);
+						stream.end();
+					});
+				});
+			}
+		}
+	});
+}
