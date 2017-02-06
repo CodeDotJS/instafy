@@ -121,7 +121,7 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 					spinner.stop();
 
 					if (changeRemote === changeLocal) {
-						logUpdate(`\n${pre} ${chalk.cyan('Notification :')} ${chalk.green('No new posts')} ${name}\n`);
+						logUpdate(`\n${pre} ${chalk.cyan('Notification :')} ${chalk.green('No new posts by')} ${name}\n`);
 					} else if (changeRemote > changeLocal) {
 						logUpdate(`\n${pre} ${chalk.blue('Notification :')} ${changeRemote - changeLocal} new post(s) by ${name}\n\n${pre} ${chalk.blue('Check at     :')} ${url.replace('/?__a=1', '')}\n`);
 					} else {
