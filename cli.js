@@ -114,7 +114,7 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 				got(url, {json: true}).then(res => {
 					const remotePosts = res.body.user.media.count;
 					const localPosts = fs.readFileSync(dir, 'utf-8');
-					const name = res.body.user.full_name;
+					const name = res.body.user.full_name || `${arg}`;
 					const changeRemote = parseInt(remotePosts, 10);
 					const changeLocal = parseInt(localPosts, 10);
 
