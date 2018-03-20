@@ -91,10 +91,10 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 						logUpdate();
 						spinner.text = `${chalk.dim(`Instafying ${arg}`)}`;
 						got(url, {json: true}).then(res => {
-							const count = res.body.user.media.count;
+							const count = res.body.graphql.user.edge_owner_to_timeline_media.count;
 							spinner.stop();
 							logUpdate(`\n${pre} ${chalk.dim('Run')} ${chalk.green(`instafy ${arg}`)} ${chalk.dim('next time to get post notifications!')}\n`);
-							const buffer = new Buffer(`${count}`);
+							const buffer = Buffer.from(`${count}`);
 							const stream = fs.createWriteStream(dir);
 							stream.once('open', () => {
 								stream.write(buffer);
@@ -112,9 +112,9 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 			}
 			if (fs.existsSync(dir)) {
 				got(url, {json: true}).then(res => {
-					const remotePosts = res.body.user.media.count;
+					const remotePosts = res.body.graphql.user.edge_owner_to_timeline_media.count;
 					const localPosts = fs.readFileSync(dir, 'utf-8');
-					const name = res.body.user.full_name || `${arg}`;
+					const name = res.body.graphql.user.full_name || `${arg}`;
 					const changeRemote = parseInt(remotePosts, 10);
 					const changeLocal = parseInt(localPosts, 10);
 
@@ -128,7 +128,7 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 						logUpdate(`\n${pos} ${chalk.red('Notification :')} ${name} deleted ${changeLocal - changeRemote} post(s)\n`);
 					}
 
-					const buffer = new Buffer(`${remotePosts}`);
+					const buffer = Buffer.from(`${remotePosts}`);
 					const stream = fs.createWriteStream(dir);
 					stream.once('open', () => {
 						stream.write(buffer);
