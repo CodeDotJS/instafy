@@ -23,7 +23,7 @@ const nex = process.argv[3];
 const pre = chalk.cyan.bold('›');
 const pos = chalk.red.bold('›');
 
-const url = `https://www.instagram.com/${arg}/?__a=1`;
+const url = `https://www.instagram.com/${arg}`;
 const baseDir = `${os.homedir()}/.instafy/`;
 const dir = `${baseDir}${arg}.txt`;
 const rem = `${baseDir}${nex}.txt`;
@@ -90,8 +90,8 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 					} else {
 						logUpdate();
 						spinner.text = `${chalk.dim(`Instafying ${arg}`)}`;
-						got(url, {json: true}).then(res => {
-							const count = res.body.graphql.user.edge_owner_to_timeline_media.count;
+						got(url).then(res => {
+							const count = res.body.split(',"edge_owner_to_timeline_media":{"count":')[1].split('}');
 							spinner.stop();
 							logUpdate(`\n${pre} ${chalk.dim('Run')} ${chalk.green(`instafy ${arg}`)} ${chalk.dim('next time to get post notifications!')}\n`);
 							const buffer = Buffer.from(`${count}`);
@@ -111,10 +111,10 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 				});
 			}
 			if (fs.existsSync(dir)) {
-				got(url, {json: true}).then(res => {
-					const remotePosts = res.body.graphql.user.edge_owner_to_timeline_media.count;
+				got(url).then(res => {
+					const remotePosts = res.body.split(',"edge_owner_to_timeline_media":{"count":')[1].split('}');
 					const localPosts = fs.readFileSync(dir, 'utf-8');
-					const name = res.body.graphql.user.full_name || `${arg}`;
+					const name = res.body.split(',"full_name":"')[1].split('",')[0] || `${arg}`;
 					const changeRemote = parseInt(remotePosts, 10);
 					const changeLocal = parseInt(localPosts, 10);
 
