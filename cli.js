@@ -91,7 +91,7 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 						logUpdate();
 						spinner.text = `${chalk.dim(`Instafying ${arg}`)}`;
 						got(url).then(res => {
-							const count = res.body.split(',"edge_owner_to_timeline_media":{"count":')[1].split('}');
+							const count = res.body.split(',"edge_owner_to_timeline_media":{"count":')[1].split(',"page_info":')[0];
 							spinner.stop();
 							logUpdate(`\n${pre} ${chalk.dim('Run')} ${chalk.green(`instafy ${arg}`)} ${chalk.dim('next time to get post notifications!')}\n`);
 							const buffer = Buffer.from(`${count}`);
@@ -112,7 +112,7 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 			}
 			if (fs.existsSync(dir)) {
 				got(url).then(res => {
-					const remotePosts = res.body.split(',"edge_owner_to_timeline_media":{"count":')[1].split('}');
+					const remotePosts = res.body.split(',"edge_owner_to_timeline_media":{"count":')[1].split(',"page_info"')[0];
 					const localPosts = fs.readFileSync(dir, 'utf-8');
 					const name = res.body.split(',"full_name":"')[1].split('",')[0] || `${arg}`;
 					const changeRemote = parseInt(remotePosts, 10);
@@ -123,7 +123,7 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 					if (changeRemote === changeLocal) {
 						logUpdate(`\n${pre} ${chalk.cyan('Notification :')} ${chalk.green('No new posts by')} ${name}\n`);
 					} else if (changeRemote > changeLocal) {
-						logUpdate(`\n${pre} ${chalk.blue('Notification :')} ${changeRemote - changeLocal} new post(s) by ${name}\n\n${pre} ${chalk.blue('Check at     :')} ${url.replace('/?__a=1', '')}\n`);
+						logUpdate(`\n${pre} ${chalk.blue('Notification :')} ${changeRemote - changeLocal} new post(s) by ${name}\n\n${pre} ${chalk.blue('Check at     :')} ${url} \n`);
 					} else {
 						logUpdate(`\n${pos} ${chalk.red('Notification :')} ${name} deleted ${changeLocal - changeRemote} post(s)\n`);
 					}
