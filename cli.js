@@ -10,6 +10,7 @@ const got = require('got');
 const logUpdate = require('log-update');
 const ora = require('ora');
 const chalk = require('chalk');
+const unicode = require('unicodechar-string');
 const updateNotifier = require('update-notifier');
 const pkg = require('./package.json');
 
@@ -121,7 +122,7 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 					spinner.stop();
 
 					if (changeRemote === changeLocal) {
-						logUpdate(`\n${pre} ${chalk.cyan('Notification :')} ${chalk.green('No new posts by')} ${name}\n`);
+						logUpdate(`\n${pre} ${chalk.cyan('Notification :')} ${chalk.green('No new posts by')} ${unicode(name)}\n`);
 					} else if (changeRemote > changeLocal) {
 						logUpdate(`\n${pre} ${chalk.blue('Notification :')} ${changeRemote - changeLocal} new post(s) by ${name}\n\n${pre} ${chalk.blue('Check at     :')} ${url} \n`);
 					} else {
