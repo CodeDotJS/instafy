@@ -124,9 +124,9 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 					if (changeRemote === changeLocal) {
 						logUpdate(`\n${pre} ${chalk.cyan('Notification :')} ${chalk.green('No new posts by')} ${unicode(name)}\n`);
 					} else if (changeRemote > changeLocal) {
-						logUpdate(`\n${pre} ${chalk.blue('Notification :')} ${changeRemote - changeLocal} new post(s) by ${name}\n\n${pre} ${chalk.blue('Check at     :')} ${url} \n`);
+						logUpdate(`\n${pre} ${chalk.blue('Notification :')} ${changeRemote - changeLocal} new post(s) by ${unicode(name)}\n\n${pre} ${chalk.blue('Check at     :')} ${url} \n`);
 					} else {
-						logUpdate(`\n${pos} ${chalk.red('Notification :')} ${name} deleted ${changeLocal - changeRemote} post(s)\n`);
+						logUpdate(`\n${pos} ${chalk.red('Notification :')} ${unicode(name)} deleted ${changeLocal - changeRemote} post(s)\n`);
 					}
 
 					const buffer = Buffer.from(`${remotePosts}`);
