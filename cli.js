@@ -25,6 +25,7 @@ const pre = chalk.cyan.bold('›');
 const pos = chalk.red.bold('›');
 
 const url = `https://www.instagram.com/${arg}`;
+const story = `https://api.storiesig.com/stories/${arg}`;
 const baseDir = `${os.homedir()}/.instafy/`;
 const dir = `${baseDir}${arg}.txt`;
 const rem = `${baseDir}${nex}.txt`;
@@ -81,7 +82,7 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 			logUpdate(`\n${pos} ${chalk.dim('Please check your internet connection!')}\n`);
 		} else {
 			logUpdate();
-			spinner.text = chalk.dim('Checking for new posts!');
+			spinner.text = `${chalk.white('Checking for new')}${chalk.yellow(' posts!')}`;
 			spinner.start();
 
 			if (!fs.existsSync(dir)) {
@@ -119,15 +120,15 @@ if (arg !== '-c' && arg !== '--clear' && arg !== '-r' && arg !== '--remove' && !
 					const changeRemote = parseInt(remotePosts, 10);
 					const changeLocal = parseInt(localPosts, 10);
 
-					spinner.stop();
+					logUpdate();
+					spinner.text = `${chalk.white('Checking for new')}${chalk.cyan(' stories')}`;
 
-					if (changeRemote === changeLocal) {
-						logUpdate(`\n${pre} ${chalk.cyan('Notification :')} ${chalk.green('No new posts by')} ${unicode(name)}\n`);
-					} else if (changeRemote > changeLocal) {
-						logUpdate(`\n${pre} ${chalk.blue('Notification :')} ${changeRemote - changeLocal} new post(s) by ${unicode(name)}\n\n${pre} ${chalk.blue('Check at     :')} ${url} \n`);
-					} else {
-						logUpdate(`\n${pos} ${chalk.red('Notification :')} ${unicode(name)} deleted ${changeLocal - changeRemote} post(s)\n`);
-					}
+					got(story, {json: true}).then(res => {
+						const num = res.body.items.length;
+						// X === Y ? 'A' : X > Y ? 'B' : X < Y ? C : N => (optional)
+						changeRemote === changeLocal ? logUpdate(`\n ${chalk.keyword('orange')('  Notification')} \n\n ${chalk.cyan('› Post')}    : No new post(s) by ${unicode(name)}\n\n ${chalk.cyan('› Story')}   : ${num} stories! \n`) : changeRemote > changeLocal ? logUpdate(`\n${chalk.keyword('orange')('   Notification')} \n\n ${chalk.cyan('› Post')}      : ${changeRemote - changeLocal} new post(s) by ${unicode(name)}\n\n ${chalk.cyan('› Story')}     : ${num} stories! \n\n ${chalk.cyan('› Check at ')} : ${url} \n`) : changeRemote < changeLocal ? logUpdate(`\n ${chalk.keyword('orange')('  Notification')} \n\n ${chalk.cyan('› Post')}    : ${unicode(name)} deleted ${changeLocal - changeRemote} post(s)!\n\n ${chalk.cyan('› Story')}   : ${num} stories! \n`) : logUpdate(); // eslint-disable-line no-unused-expressions
+						spinner.stop();
+					});
 
 					const buffer = Buffer.from(`${remotePosts}`);
 					const stream = fs.createWriteStream(dir);
